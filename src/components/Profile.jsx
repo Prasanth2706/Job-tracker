@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { User, Edit, Save, X } from "lucide-react";
 
-function Profile() {
+function Profile({ userInfo, setUserInfo }) {
   const [user, setUser] = useState({
-    name: "Prasanth",
-    email: "prasanth270627@gmail.com",
-    bio: "A passionate Web Developer!",
+    name: "Change it to your  Name ",
+    email: "yourmail@gmail.com",
+    bio: "Give a Bio",
   });
 
   const [isEditing, setIsEditing] = useState(false);
@@ -19,6 +19,8 @@ function Profile() {
   // ✅ Save updated profile
   const handleSave = () => {
     setUser(editedUser);
+    setUserInfo(editedUser);
+    console.log(userInfo,'ed')
     localStorage.setItem("user", JSON.stringify(editedUser)); // Save to localStorage
     setIsEditing(false);
   };
@@ -37,9 +39,9 @@ function Profile() {
           <User className="w-10 h-10" />
         </div>
         <h2 className="text-2xl font-semibold text-gray-800 mt-4">
-          {user.name}
+        {userInfo.name || "Guest"}
         </h2>
-        <p className="text-gray-500">{user.email}</p>
+        <p className="text-gray-500">{userInfo.email || "No email provided"}</p>
       </div>
 
       {/* Edit Mode: Show Input Fields */}

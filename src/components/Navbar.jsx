@@ -1,21 +1,9 @@
 import { useEffect, useState } from "react";
 import { Bell, User, Search, X } from "lucide-react";
 
-function Navbar({ jobs }) {
+function Navbar({ jobs,userInfo }) {
   const [showProfile, setShowProfile] = useState(false);
-  const [userInfo, setUserInfo] = useState({
-    name: "",
-    email: "",
-  });
-
-  // ✅ Load user data from localStorage on mount
-
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUserInfo(JSON.parse(storedUser));
-    }
-  }, []);
+ 
 
   // Categorizing job applications
   const appliedJobs = jobs.filter(
@@ -29,11 +17,7 @@ function Navbar({ jobs }) {
   );
   const offerJobs = jobs.filter((job) => job.status.toLowerCase() === "offer");
 
-  // Handle user input changes
-  const handleChange = (e) => {
-    setUserInfo({ ...userInfo, [e.target.name]: e.target.value });
-  };
-
+ 
   return (
     <>
       {/* ✅ Navbar Always Visible */}

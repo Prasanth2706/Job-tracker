@@ -13,6 +13,7 @@ function App() {
   const [searchText, setSearchText] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [activeSection, setActiveSection] = useState("dashboard"); // ✅ Track active section
+  const [userInfo, setUserInfo] = useState({ name: "Guest", email: "No Mail" });
 
   useEffect(() => {
     const storedJobs = localStorage.getItem("jobs");
@@ -86,7 +87,11 @@ function App() {
       <div className="ml-60 w-full p-6 mt-16 overflow-auto">
         {" "}
         {/* Ensures content doesn't overlap navbar */}
-        <Navbar setActiveSection={setActiveSection} jobs={jobs} />
+        <Navbar
+          setActiveSection={setActiveSection}
+          jobs={jobs}
+          userInfo={userInfo}
+        />
         {activeSection === "dashboard" && (
           <>
             <div className="mb-4">
@@ -101,7 +106,9 @@ function App() {
           </>
         )}
         {activeSection === "stats" && <Stats jobs={jobs} />}
-        {activeSection === "profile" && <Profile />}
+        {activeSection === "profile" && (
+          <Profile userInfo={userInfo} setUserInfo={setUserInfo} />
+        )}
       </div>
     </div>
   );
