@@ -65,9 +65,10 @@ function JobForm({ addJob }) {
             <option value="Applied">Applied</option>
             <option value="Interview">Interview</option>
             <option value="Rejected">Rejected</option>
+            <option value="Offer">offer</option>
           </select>
         </div>
-
+        
         <div>
           <label className="block text-gray-700">Date Applied</label>
           <input
@@ -80,7 +81,10 @@ function JobForm({ addJob }) {
           />
         </div>
 
-        <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded-lg">
+        <button
+          type="submit"
+          className="w-full bg-blue-600 text-white py-2 rounded-lg"
+        >
           Add Job
         </button>
       </form>
@@ -89,5 +93,3 @@ function JobForm({ addJob }) {
 }
 
 export default JobForm;
-
-
