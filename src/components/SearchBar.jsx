@@ -15,19 +15,21 @@ function SearchBar({ onSearch, onFilter }) {
   };
 
   return (
-    <div className="flex gap-4 mb-4">
+    <div className="flex flex-col sm:flex-row gap-4 mb-4">
+      {/* Search Input */}
       <input
         type="text"
         placeholder="Search by job title or company..."
         value={searchText}
         onChange={handleSearch}
-        className="w-full p-2 border rounded-lg"
+        className="w-full p-2 sm:p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
 
+      {/* Status Filter Dropdown */}
       <select
         value={statusFilter}
         onChange={handleFilter}
-        className="p-2 border rounded-lg"
+        className="w-full sm:w-auto p-2 sm:p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
       >
         <option value="">All</option>
         <option value="Applied">Applied</option>

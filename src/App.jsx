@@ -14,6 +14,7 @@ function App() {
   const [statusFilter, setStatusFilter] = useState("");
   const [activeSection, setActiveSection] = useState("dashboard"); // ✅ Track active section
   const [userInfo, setUserInfo] = useState({ name: "Guest", email: "No Mail" });
+  const [sidebarOpen, setSidebarOpen] = useState(false); // ✅ Sidebar state
 
   useEffect(() => {
     const storedJobs = localStorage.getItem("jobs");
@@ -39,7 +40,6 @@ function App() {
   }, [jobs]);
 
   const addJob = (newJob) => {
-    // console.log(newJob, "new");
     const updatedJobs = [
       ...jobs,
       { ...newJob, id: Date.now(), status: newJob.status || "applied" },
@@ -65,7 +65,6 @@ function App() {
 
   useEffect(() => {
     let updatedJobs = jobs;
-
     if (searchText) {
       updatedJobs = updatedJobs.filter(
         (job) =>
@@ -73,36 +72,58 @@ function App() {
           job.company.toLowerCase().includes(searchText.toLowerCase())
       );
     }
-
     if (statusFilter) {
       updatedJobs = updatedJobs.filter((job) => job.status === statusFilter);
     }
-
     setFilteredJobs(updatedJobs);
   }, [searchText, statusFilter, jobs]);
 
   return (
-    <div className="flex">
-      <Sidebar setActiveSection={setActiveSection} />
-      <div className="ml-60 w-full p-6 mt-16 overflow-auto">
-        {" "}
-        {/* Ensures content doesn't overlap navbar */}
+    <div className="flex h-screen overflow-hidden">
+      {/* Sidebar */}
+      <Sidebar
+        setActiveSection={setActiveSection}
+        sidebarOpen={sidebarOpen}
+        setSidebarOpen={setSidebarOpen}
+      />
+
+      {/* Main Content */}
+      <div
+        className={`flex-1 flex flex-col transition-all duration-300 ${
+          sidebarOpen ? "ml-60" : "ml-0"
+        } sm:ml-60 p-6 mt-16 overflow-auto`}
+      >
+        {/* Navbar */}
         <Navbar
-          setActiveSection={setActiveSection}
           jobs={jobs}
           userInfo={userInfo}
+          setActiveSection={setActiveSection}
+          setSidebarOpen={setSidebarOpen}
         />
+
+        {/* Conditional Rendering of Sections */}
         {activeSection === "dashboard" && (
           <>
             <div className="mb-4">
               <SearchBar onSearch={setSearchText} onFilter={setStatusFilter} />
             </div>
-            <JobForm addJob={addJob} />
-            <JobList
-              jobs={filteredJobs}
-              deleteJob={deleteJob}
-              updateJob={updateJob}
-            />
+
+            {/* Form + Job List Section */}
+            <div className="flex flex-col lg:flex-row gap-6">
+              {/* Form */}
+              <div className="w-full lg:w-1/2 bg-white p-4 rounded-lg shadow-md">
+                <JobForm addJob={addJob} />
+              </div>
+
+              {/* Job List */}
+              <div className="w-full lg:w-2/3">
+                <JobList
+                  jobs={filteredJobs}
+                  deleteJob={deleteJob}
+                  updateJob={updateJob}
+                />
+              </div>
+            </div>
           </>
         )}
         {activeSection === "stats" && <Stats jobs={jobs} />}
