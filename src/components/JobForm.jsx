@@ -151,7 +151,7 @@ function JobForm({ addJob }) {
               <Loader2 className="w-5 h-5 animate-spin" />
             ) : (
               <Briefcase className="w-5 h-5" />
-            )}
+            )}  
             {isSubmitting ? 'Adding Job...' : 'Add Job Application'}
           </button>
         </form>

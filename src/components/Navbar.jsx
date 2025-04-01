@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from "react";
+import axios from "axios";
 import {
   Bell,
   User,
@@ -14,16 +15,47 @@ function Navbar({ jobs, userInfo, setSidebarOpen }) {
   const [showNotifications, setShowNotifications] = useState(false);
   const [hasUnreadNotifications, setHasUnreadNotifications] = useState(false);
   const [lastSeenJobs, setLastSeenJobs] = useState(() => {
-    const saved = localStorage.getItem('lastSeenJobs');
+    const saved = localStorage.getItem("lastSeenJobs");
     return saved ? JSON.parse(saved) : [];
   });
   const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
+
+  const [quote, setQuote] = useState("");
+  const [showQuote, setShowQuote] = useState(false);
+
+  // Fetch a random quote from the Quotable API
+   
   const notificationRef = useRef(null);
+
+  useEffect(() => {
+    const fetchQuote = async () => {
+      try {
+        const response = await fetch("https://dummyjson.com/quotes");
+        const data = await response.json();
+        // Get a random quote from the array
+        const randomIndex = Math.floor(Math.random() * data.quotes.length);
+        setQuote(data.quotes[randomIndex].quote);
+        setShowQuote(true);
+        setTimeout(() => setShowQuote(false), 3000);
+
+      } catch (error) {
+        console.error("Error fetching quote:", error);
+        setQuote(
+          "Success is not final, failure is not fatal: it is the courage to continue that counts."
+        );
+      }
+    };
+
+    fetchQuote();
+  }, []);
 
   // Handle click outside notifications
   useEffect(() => {
     function handleClickOutside(event) {
-      if (notificationRef.current && !notificationRef.current.contains(event.target)) {
+      if (
+        notificationRef.current &&
+        !notificationRef.current.contains(event.target)
+      ) {
         setShowNotifications(false);
       }
     }
@@ -35,8 +67,8 @@ function Navbar({ jobs, userInfo, setSidebarOpen }) {
   // Check for new jobs
   useEffect(() => {
     if (jobs.length > 0) {
-      const lastSeenJobIds = new Set(lastSeenJobs.map(job => job.id));
-      const hasNewJobs = jobs.some(job => !lastSeenJobIds.has(job.id));
+      const lastSeenJobIds = new Set(lastSeenJobs.map((job) => job.id));
+      const hasNewJobs = jobs.some((job) => !lastSeenJobIds.has(job.id));
       setHasUnreadNotifications(hasNewJobs);
     }
   }, [jobs, lastSeenJobs]);
@@ -54,7 +86,7 @@ function Navbar({ jobs, userInfo, setSidebarOpen }) {
       setHasUnreadNotifications(false);
       // Update lastSeenJobs with current jobs
       setLastSeenJobs(jobs);
-      localStorage.setItem('lastSeenJobs', JSON.stringify(jobs));
+      localStorage.setItem("lastSeenJobs", JSON.stringify(jobs));
     }
   };
 
@@ -96,7 +128,6 @@ function Navbar({ jobs, userInfo, setSidebarOpen }) {
               onClick={() => setSidebarOpen((prev) => !prev)}
               className="group relative p-2 rounded-xl hover:bg-gray-100 transition-all duration-200"
             >
-              {/* <Menu className="w-6 h-6 text-gray-600 group-hover:text-blue-600 transition-colors duration-200" /> */}
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center shadow-lg">
                   <Menu className="w-5 h-5 text-white" />
@@ -146,28 +177,30 @@ function Navbar({ jobs, userInfo, setSidebarOpen }) {
                     .sort((a, b) => new Date(b.date) - new Date(a.date))
                     .slice(0, 5)
                     .map((job) => (
-                    <div
-                      key={job.id}
-                      className="px-4 py-2 hover:bg-gray-50 transition-colors duration-200"
-                    >
-                      <div className="flex items-center gap-3">
-                        <div
-                          className={`w-2 h-2 rounded-full ${getStatusColor(
-                            job.status
-                          )}`}
-                        />
-                        <div>
-                          <p className="text-sm font-medium text-gray-900">
-                            {job.title}
-                          </p>
-                          <p className="text-xs text-gray-500">{job.company}</p>
-                          <p className="text-xs text-gray-400 mt-0.5">
-                            {new Date(job.date).toLocaleDateString()}
-                          </p>
+                      <div
+                        key={job.id}
+                        className="px-4 py-2 hover:bg-gray-50 transition-colors duration-200"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div
+                            className={`w-2 h-2 rounded-full ${getStatusColor(
+                              job.status
+                            )}`}
+                          />
+                          <div>
+                            <p className="text-sm font-medium text-gray-900">
+                              {job.title}
+                            </p>
+                            <p className="text-xs text-gray-500">
+                              {job.company}
+                            </p>
+                            <p className="text-xs text-gray-400 mt-0.5">
+                              {new Date(job.date).toLocaleDateString()}
+                            </p>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
                 </div>
               </div>
             )}
@@ -297,6 +330,27 @@ function Navbar({ jobs, userInfo, setSidebarOpen }) {
           </div>
         </div>
       )}
+
+      {/* Display the fetched quote */}
+      {showQuote &&  <div className="fixed bottom-4 left-4 right-4 md:left-4 md:right-auto md:w-96 bg-white p-4 rounded-xl shadow-lg border border-gray-100">
+        <div className="flex items-start gap-3">
+          <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+            <svg
+              className="w-4 h-4 text-blue-600"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path d="M4.583 17.321C3.553 16.227 3 15 3 13.011c0-3.5 2.457-7.636 6.03-8.188l.893 1.378c-3.335.801-3.987 4.145-4.247 5.621.537-.278 1.24-.375 1.929-.311 1.804.167 1.905 1.831 1.831 3.01 0 1.89-1.078 5.087-1.078 5.087s-1.078-2.584-1.078-5.087c0-1.179.101-2.843 1.905-3.01 1.021-.094 1.923.14 2.76.577 1.56.799 2.924 2.312 3.612 4.025 1.19 2.97 1.19 6.207 0 9.177-.688 1.713-2.052 3.226-3.612 4.025-1.56.799-3.366.799-4.926 0-1.56-.799-2.924-2.312-3.612-4.025z" />
+            </svg>
+          </div>
+          <div>
+            <p className="text-gray-700 text-sm leading-relaxed italic">
+              "{quote}"
+            </p>
+            <p className="text-xs text-gray-400 mt-1">Daily Motivation</p>
+          </div>
+        </div>
+      </div>}
     </>
   );
 }
